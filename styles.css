@@ -5,6 +5,7 @@
   --text-color-dark: #212529;
   --accent-color: #4361ee;
   --accent-color-light: #4cc9f0;
+  --accent-color-dark: #2f55cc;
   --secondary-color: #f72585;
   --secondary-color-light: #ff8fab;
   --tertiary-color: #7209b7;
@@ -37,93 +38,120 @@ body {
 
 /* Header Styles */
 header {
-  padding: 20px 0;
-  background-color: var(--bg-color);
+  padding: 15px 0;
   position: sticky;
   top: 0;
+  background-color: var(--bg-color);
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   border-bottom: 1px solid var(--border-color);
 }
 
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  flex-wrap: nowrap;
 }
 
 .profile {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .profile-icon {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
 }
 
 .avatar {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   object-fit: cover;
-}
-
-h1 {
-  font-size: 2rem;
-  color: var(--text-color-dark);
-  margin-bottom: 5px;
-}
-
-.tagline {
-  color: var(--text-color-light);
-  font-size: 1rem;
+  border-radius: 50%;
 }
 
 nav {
-  margin-top: 20px;
+  flex-shrink: 0;
 }
 
 nav ul {
   display: flex;
   list-style: none;
   gap: 15px;
-  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--text-color);
-  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
   position: relative;
-  padding: 5px 0;
-  transition: color 0.3s;
+  overflow: hidden;
 }
 
 .nav-link:hover {
-  color: var(--accent-color);
+  background-color: var(--accent-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.nav-link:active {
+  transform: scale(0.95);
+  background-color: var(--accent-color-dark, #2f55cc);
 }
 
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--accent-color);
-  transition: width 0.3s;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
 }
 
-.nav-link:hover::after {
-  width: 100%;
+.nav-link:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-color-light);
 }
 
 /* Portfolio Sections */
