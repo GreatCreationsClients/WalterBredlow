@@ -133,6 +133,49 @@
       opacity: 1;
       transform: translateY(0);
     }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1002;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .toast-content {
+      display: flex;
+      align-items: center;
+    }
+    
+    .toast-icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+    }
+    
+    .toast-message {
+      font-size: 1rem;
+    }
+    
+    .toast-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -237,49 +280,72 @@
     </main>
 
     <section id="contact" class="contact-section">
-      <div class="contact-container">
-        <h2>Contact Information</h2>
-        
-        <div class="contact-content">
+      <div class="container">
+        <h2>Contact</h2>
+        <div class="contact-container">
           <div class="contact-info">
             <div class="contact-item">
               <h3>Address</h3>
-              <p>Apt. 409 2719 Gladys Ave.</p>
-              <p>Abbotsford, BC V2S3X9</p>
+              <p>
+                Apt. 409<br>
+                2719 Gladys Ave.<br>
+                Abbotsford, BC<br>
+                V2S3X9
+              </p>
             </div>
             
             <div class="contact-item">
               <h3>Contact Details</h3>
               <p><strong>Email:</strong> <a href="mailto:waloiddd@gmail.com">waloiddd@gmail.com</a></p>
               <p><strong>Phone:</strong> Preferably Call (604) 807-3872</p>
-              <p><strong>Hours:</strong> Best Hours to call Monday-Sunday, 9am - 5pm</p>
+              <p><strong>Hours:</strong> Best Hours to call Monday-Saturday, 9am - 5pm</p>
             </div>
           </div>
           
-          <div class="contact-form">
-            <h3>Send a Message</h3>
-            <form>
+          <div class="contact-form-container">
+            <h3>Send Me a Message</h3>
+            <form id="contactForm" action="https://formsubmit.co/waloiddd@gmail.com" method="POST" class="contact-form" target="hiddenFrame">
+              <!-- FormSubmit configuration -->
+              <input type="hidden" name="_subject" value="New contact from Portfolio Website">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_honey" value="">
+              <input type="hidden" name="_confirmation" value="Your message was sent successfully!">
+              
               <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required>
               </div>
-              
               <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
               </div>
-              
+              <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" required>
+              </div>
               <div class="form-group">
                 <label for="message">Message</label>
                 <textarea id="message" name="message" rows="5" required></textarea>
               </div>
-              
               <button type="submit" class="submit-btn">Send Message</button>
+              <div id="formStatus" class="form-status"></div>
             </form>
+            <!-- Hidden iframe for form submission -->
+            <iframe name="hiddenFrame" style="display:none;"></iframe>
           </div>
         </div>
       </div>
     </section>
+    
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+      <div class="toast-content">
+        <div class="toast-icon">✓</div>
+        <div class="toast-message">Message sent successfully!</div>
+      </div>
+      <div class="toast-close">×</div>
+    </div>
 
     <footer>
       <p>&copy; 2025 Walter Bredlow. All rights reserved.</p>

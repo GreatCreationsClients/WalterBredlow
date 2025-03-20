@@ -61,20 +61,113 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleEmploymentBtn.textContent === 'Show More' ? 'Show Less' : 'Show More';
   });
   
+  // Handle form submission
+  const contactForm = document.getElementById('contactForm');
+  const formStatus = document.getElementById('formStatus');
+  const toast = document.getElementById('toast');
+  const toastMessage = document.querySelector('.toast-message');
+  const toastClose = document.querySelector('.toast-close');
+  
+  // Function to show toast notifications
+  function showToast(message, type = 'success') {
+    toastMessage.textContent = message;
+    toast.className = 'toast show';
+    
+    if (type !== 'success') {
+      toast.classList.add(type);
+    }
+    
+    // Automatically hide toast after 5 seconds
+    setTimeout(() => {
+      hideToast();
+    }, 5000);
+  }
+  
+  // Function to hide toast
+  function hideToast() {
+    toast.className = 'toast';
+  }
+  
+  // Add event listener to toast close button
+  if (toastClose) {
+    toastClose.addEventListener('click', hideToast);
+  }
+  
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(event) {
+      // Check if all required fields are filled
+      const requiredFields = contactForm.querySelectorAll('[required]');
+      let isValid = true;
+      
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          isValid = false;
+          field.classList.add('error');
+        } else {
+          field.classList.remove('error');
+        }
+      });
+      
+      if (!isValid) {
+        event.preventDefault();
+        formStatus.textContent = 'Please fill in all required fields.';
+        formStatus.className = 'form-status error';
+        return;
+      }
+      
+      // Show loading status
+      formStatus.textContent = 'Sending message...';
+      formStatus.className = 'form-status loading';
+      
+      // Set a timeout to show the success message after form submission
+      // The form actually submits to the hidden iframe
+      setTimeout(() => {
+        formStatus.textContent = '';
+        formStatus.className = 'form-status';
+        showToast('Message sent successfully!');
+        contactForm.reset();
+      }, 1500);
+    });
+  }
+  
   // Smooth scrolling for navigation links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+  const navLinks = document.querySelectorAll('.nav-link');
+  
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
       e.preventDefault();
       
       const targetId = this.getAttribute('href');
-      const targetElement = document.querySelector(targetId);
+      const targetSection = document.querySelector(targetId);
       
-      window.scrollTo({
-        top: targetElement.offsetTop - 100,
-        behavior: 'smooth'
-      });
+      if (targetSection) {
+        window.scrollTo({
+          top: targetSection.offsetTop - 100,
+          behavior: 'smooth'
+        });
+      }
     });
   });
+  
+  // Highlight active navigation link based on scroll position
+  function updateActiveNavLink() {
+    const sections = document.querySelectorAll('section[id]');
+    const scrollPosition = window.scrollY;
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 150;
+      const sectionHeight = section.offsetHeight;
+      const sectionId = section.getAttribute('id');
+      
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        document.querySelector(`.nav-link[href="#${sectionId}"]`)?.classList.add('active');
+      } else {
+        document.querySelector(`.nav-link[href="#${sectionId}"]`)?.classList.remove('active');
+      }
+    });
+  }
+  
+  window.addEventListener('scroll', updateActiveNavLink);
   
   // Helper functions for modal
   function openModal(section, index) {
@@ -126,60 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
           sectionGrid.appendChild(portfolioItem);
         });
       }
-    });
-  }
-  
-  // Add active class to current nav item 
-  function updateActiveNavLink() {
-    const sections = document.querySelectorAll('.portfolio-section');
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    let currentSectionId = '';
-    
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop - 150;
-      const sectionBottom = sectionTop + section.offsetHeight;
-      
-      if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
-        currentSectionId = section.getAttribute('id');
-      }
-    });
-    
-    navLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${currentSectionId}`) {
-        link.classList.add('active');
-      }
-    });
-  }
-  
-  window.addEventListener('scroll', updateActiveNavLink);
-  
-  // Contact form submission
-  const contactForm = document.querySelector('.contact-form form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const nameInput = document.getElementById('name');
-      const emailInput = document.getElementById('email');
-      const messageInput = document.getElementById('message');
-      
-      // Validate inputs
-      if (!nameInput.value || !emailInput.value || !messageInput.value) {
-        alert('Please fill in all fields');
-        return;
-      }
-      
-      // Here you would normally send the form data to a server
-      // For this demo, we'll just show a success message
-      // In a real implementation, you would send an email to waloiddd@gmail.com
-      alert(`Thank you for your message, ${nameInput.value}! We'll get back to you soon.`);
-      
-      // Clear the form
-      nameInput.value = '';
-      emailInput.value = '';
-      messageInput.value = '';
     });
   }
 });
