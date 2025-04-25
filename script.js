@@ -248,13 +248,21 @@ document.addEventListener('DOMContentLoaded', () => {
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', function (e) {
         overlayImg.src = img.src;
+        overlayImg.alt = img.alt || '';
         overlay.classList.add('active');
+        overlay.style.display = 'flex';
+        overlayImg.style.display = 'block';
+        overlayClose.style.display = 'block';
         document.body.style.overflow = 'hidden';
       });
     });
     function closeOverlay() {
       overlay.classList.remove('active');
       overlayImg.src = '';
+      overlayImg.alt = '';
+      overlay.style.display = 'none';
+      overlayImg.style.display = 'none';
+      overlayClose.style.display = 'none';
       document.body.style.overflow = '';
     }
     overlayClose.addEventListener('click', closeOverlay);
