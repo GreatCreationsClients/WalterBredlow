@@ -61,6 +61,21 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleEmploymentBtn.textContent === 'Show More' ? 'Show Less' : 'Show More';
   });
   
+  // Toggle education section
+  const toggleEducationBtn = document.getElementById('toggle-education');
+  const educationExtra = document.getElementById('education-extra');
+  if (toggleEducationBtn && educationExtra) {
+    toggleEducationBtn.addEventListener('click', () => {
+      if (educationExtra.style.display === 'none' || educationExtra.style.display === '') {
+        educationExtra.style.display = 'block';
+        toggleEducationBtn.textContent = 'Show Less';
+      } else {
+        educationExtra.style.display = 'none';
+        toggleEducationBtn.textContent = 'Show More';
+      }
+    });
+  }
+  
   // Handle form submission
   const contactForm = document.getElementById('contactForm');
   const formStatus = document.getElementById('formStatus');
