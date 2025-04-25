@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walter Bredlow - Portfolio Editor</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="script.js" defer></script>
+  <style>
+    /* Editor-specific styles */
+    .admin-bar {
+      background-color: #222;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1001;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .admin-bar .status {
+      font-weight: bold;
+    }
+    
+    .admin-bar .save-all {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .admin-bar .save-all:hover {
+      background-color: var(--accent-color-light);
+    }
+    
+    .portfolio-item .edit-title,
+    .portfolio-item .edit-description {
+      padding: 5px 10px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 2px solid var(--accent-color);
+      width: 100%;
+      font-family: inherit;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    
+    .portfolio-item .edit-description {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .portfolio-item .save-btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    
+    .portfolio-item .save-btn:hover {
+      background-color: var(--accent-color-light);
+    }
+    
+    .portfolio-item {
+      position: relative;
+    }
+    
+    .portfolio-item .item-index {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+    
+    .item-editor {
+      padding: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      margin-top: 15px;
+    }
+    
+    .edit-btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    
+    .edit-btn:hover {
+      background-color: var(--accent-color-light);
+    }
+    
+    body {
+      padding-bottom: 60px; /* Make room for admin bar */
+    }
+    
+    .success-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1002;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .success-notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1002;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .toast-content {
+      display: flex;
+      align-items: center;
+    }
+    
+    .toast-icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+    }
+    
+    .toast-message {
+      font-size: 1rem;
+    }
+    
+    .toast-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    /* Make portfolio images square */
+    .portfolio-item img {
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      width: 100%;
+      height: auto;
+      max-width: 300px;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="profile">
+        <div class="profile-icon">
+          <img src="https://greatcreationsclients.github.io/WalterBredlow/images/wally.jpeg" alt="Walter Bredlow" class="avatar">
+        </div>
+        <h1>Walter Bredlow</h1>
+        <p class="tagline">Graphic Designer & Artist</p>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#signs" class="nav-link">Signs</a></li>
+          <li><a href="#painting" class="nav-link">Painting & Sculpture</a></li>
+          <li><a href="#graphics" class="nav-link">Graphics & Multimedia</a></li>
+          <li><a href="#diagrams" class="nav-link">Diagrams & Fonts</a></li>
+          <li><a href="#resume" class="nav-link">Resume</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <main>
+      <section id="signs" class="portfolio-section">
+        <h2>Signs</h2>
+        <div class="portfolio-grid" id="signs-grid">
+          <!-- Signs content will be loaded here via JavaScript -->
+        </div>
+      </section>
+
+      <section id="painting" class="portfolio-section">
+        <h2>Painting & Sculpture</h2>
+        <div class="portfolio-grid" id="painting-grid">
+          <!-- Painting content will be loaded here via JavaScript -->
+        </div>
+      </section>
+
+      <section id="graphics" class="portfolio-section">
+        <h2>Graphics & Multimedia</h2>
+        <div class="portfolio-grid" id="graphics-grid">
+          <!-- Graphics content will be loaded here via JavaScript -->
+        </div>
+      </section>
+
+      <section id="diagrams" class="portfolio-section">
+        <h2>Diagrams & Fonts</h2>
+        <div class="portfolio-grid" id="diagrams-grid">
+          <!-- Diagrams content will be loaded here via JavaScript -->
+        </div>
+      </section>
+
+      <section id="resume" class="portfolio-section">
+        <h2>Resume</h2>
+        <div class="resume-content">
+          <h3>Education</h3>
+          <div class="resume-item">
+            <h4>Bachelor of Fine Arts in Graphic Design</h4>
+            <p class="institution">Vancouver Institute of Design</p>
+            <p class="date">2008 - 2012</p>
+            <p>Studied graphic design, typography, branding, and digital media. Graduated with honors.</p>
+          </div>
+
+          <h3>Professional Experience</h3>
+          <div class="resume-item">
+            <h4>Lead Graphic Designer</h4>
+            <p class="institution">Creative Solutions Agency</p>
+            <p class="date">2018 - Present</p>
+            <p>Responsible for creating visual identities, marketing materials, and digital assets for a diverse range of clients. Lead a team of junior designers and collaborate with web developers and marketing specialists.</p>
+          </div>
+
+          <div class="resume-item">
+            <h4>Senior Designer</h4>
+            <p class="institution">Graphic Design Studio</p>
+            <p class="date">2015 - 2018</p>
+            <p>Designed brand identities, packaging, print materials, and digital assets for clients across various industries. Collaborated with clients to understand their needs and translate them into effective visual solutions.</p>
+          </div>
+
+          <div class="resume-item">
+            <h4>Junior Designer</h4>
+            <p class="institution">Marketing Agency</p>
+            <p class="date">2012 - 2015</p>
+            <p>Created marketing materials, social media graphics, and web assets for clients. Assisted senior designers with larger projects and client presentations.</p>
+          </div>
+
+          <h3>Skills</h3>
+          <ul class="skills-list">
+            <li>Adobe Creative Suite (Photoshop, Illustrator, InDesign)</li>
+            <li>Brand Identity Design</li>
+            <li>Typography</li>
+            <li>UI/UX Design</li>
+            <li>Print Design</li>
+            <li>Digital Illustration</li>
+            <li>Photography</li>
+            <li>Web Design Basics</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <section id="contact" class="contact-section">
+      <div class="container">
+        <h2>Contact</h2>
+        <div class="contact-container">
+          <div class="contact-info">
+            <div class="contact-item">
+              <h3>Address</h3>
+              <p>
+                Apt. 409<br>
+                2719 Gladys Ave.<br>
+                Abbotsford, BC<br>
+                V2S3X9
+              </p>
+            </div>
+            
+            <div class="contact-item">
+              <h3>Contact Details</h3>
+              <p><strong>Email:</strong> <a href="mailto:waloiddd@gmail.com">waloiddd@gmail.com</a></p>
+              <p><strong>Phone:</strong> Preferably Call (604) 807-3872</p>
+              <p><strong>Hours:</strong> Best Hours to call Monday-Saturday, 9am - 5pm</p>
+            </div>
+          </div>
+          
+          <div class="contact-form-container">
+            <h3>Send Me a Message</h3>
+            <form id="contactForm" action="https://formsubmit.co/waloiddd@gmail.com" method="POST" class="contact-form" target="hiddenFrame">
+              <!-- FormSubmit configuration -->
+              <input type="hidden" name="_subject" value="New contact from Portfolio Website">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_honey" value="">
+              <input type="hidden" name="_confirmation" value="Your message was sent successfully!">
+              
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+              <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" required>
+              </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="submit-btn">Send Message</button>
+              <div id="formStatus" class="form-status"></div>
+            </form>
+            <!-- Hidden iframe for form submission -->
+            <iframe name="hiddenFrame" style="display:none;"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+      <div class="toast-content">
+        <div class="toast-icon">✓</div>
+        <div class="toast-message">Message sent successfully!</div>
+      </div>
+      <div class="toast-close">×</div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 Walter Bredlow. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/waloid" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24" class="social-icon">
+            <path d="M22,12 C22,6.48 17.52,2 12,2 C6.48,2 2,6.48 2,12 C2,16.84 5.44,20.87 10,21.8 L10,15 L8,15 L8,12 L10,12 L10,9.5 C10,7.57 11.57,6 13.5,6 L16,6 L16,9 L14,9 C13.45,9 13,9.45 13,10 L13,12 L16,12 L15.5,15 L13,15 L13,21.95 C18.05,21.45 22,17.19 22,12 Z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <div class="admin-bar">
+    <div class="status">Portfolio Editor Mode</div>
+    <button class="save-all" id="saveAllChanges">Save All Changes</button>
+  </div>
+
+  <div class="success-notification" id="successNotification">
+    Changes saved successfully!
+  </div>
+
+  <script type="module">
+    // Import the portfolio data
+    import { portfolioData } from './config.js';
+    
+    // Global state to track changes
+    const changes = {
+      signs: {},
+      painting: {},
+      graphics: {},
+      diagrams: {}
+    };
+    
+    // Function to create portfolio items with edit functionality
+    function createPortfolioItems(section, data) {
+      const grid = document.getElementById(`${section}-grid`);
+      grid.innerHTML = '';
+      
+      data.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'portfolio-item';
+        itemEl.dataset.index = index;
+        itemEl.dataset.section = section;
+        
+        // Create the item HTML with editable fields
+        itemEl.innerHTML = `
+          <div class="item-index">#${index + 1}</div>
+          <img src="${item.image}" alt="${item.title}">
+          <div class="item-info">
+            <h3>${item.title}</h3>
+            <div>${item.description}</div>
+            <button class="edit-btn">Edit</button>
+          </div>
+          <div class="item-editor" style="display: none;">
+            <label for="title-${section}-${index}">Title:</label>
+            <input type="text" class="edit-title" id="title-${section}-${index}" value="${item.title}">
+            
+            <label for="desc-${section}-${index}">Description:</label>
+            <textarea class="edit-description" id="desc-${section}-${index}">${item.description.replace(/<p>/g, '').replace(/<\/p>/g, '\n').trim()}</textarea>
+            
+            <button class="save-btn" data-section="${section}" data-index="${index}">Save Changes</button>
+          </div>
+        `;
+        
+        grid.appendChild(itemEl);
+        
+        // Add event listener to the edit button
+        const editBtn = itemEl.querySelector('.edit-btn');
+        const itemEditor = itemEl.querySelector('.item-editor');
+        
+        editBtn.addEventListener('click', () => {
+          if (itemEditor.style.display === 'none') {
+            itemEditor.style.display = 'block';
+            editBtn.textContent = 'Cancel';
+          } else {
+            itemEditor.style.display = 'none';
+            editBtn.textContent = 'Edit';
+          }
+        });
+        
+        // Add event listener to the save button
+        const saveBtn = itemEl.querySelector('.save-btn');
+        saveBtn.addEventListener('click', () => {
+          const titleInput = itemEl.querySelector('.edit-title');
+          const descInput = itemEl.querySelector('.edit-description');
+          
+          // Update the item in the UI
+          itemEl.querySelector('h3').textContent = titleInput.value;
+          itemEl.querySelector('.item-info div').innerHTML = formatDescription(descInput.value);
+          
+          // Store the changes
+          if (!changes[section][index]) {
+            changes[section][index] = {};
+          }
+          
+          changes[section][index] = {
+            title: titleInput.value,
+            description: formatDescription(descInput.value)
+          };
+          
+          // Hide the editor
+          itemEditor.style.display = 'none';
+          editBtn.textContent = 'Edit';
+          
+          // Show success notification
+          showNotification();
+        });
+      });
+    }
+    
+    // Format the description text to HTML
+    function formatDescription(text) {
+      const paragraphs = text.split('\n').filter(p => p.trim() !== '');
+      return paragraphs.map(p => `<p>${p}</p>`).join('');
+    }
+    
+    // Show success notification
+    function showNotification() {
+      const notification = document.getElementById('successNotification');
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Save all changes to config.js
+    function saveAllChanges() {
+      // Create a copy of the original data
+      const updatedData = JSON.parse(JSON.stringify(portfolioData));
+      
+      // Apply all changes
+      for (const section in changes) {
+        for (const index in changes[section]) {
+          if (updatedData[section][index]) {
+            const change = changes[section][index];
+            if (change.title) {
+              updatedData[section][index].title = change.title;
+            }
+            if (change.description) {
+              updatedData[section][index].description = change.description;
+            }
+          }
+        }
+      }
+      
+      // Generate the new config.js content
+      const configContent = `// Portfolio data configuration
+export const portfolioData = ${JSON.stringify(updatedData, null, 2)};
+`;
+      
+      // Save to localStorage for retrieval by server or external script
+      localStorage.setItem('portfolioConfigContent', configContent);
+      localStorage.setItem('portfolioConfigLastSaved', new Date().toISOString());
+      
+      // Show a dialog with instructions to save the file
+      const blob = new Blob([configContent], { type: 'text/javascript' });
+      const url = URL.createObjectURL(blob);
+      
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = 'config.js';
+      downloadLink.textContent = 'Download Updated Config.js';
+      
+      const modal = document.createElement('div');
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '2000';
+      
+      const modalContent = document.createElement('div');
+      modalContent.style.backgroundColor = 'white';
+      modalContent.style.padding = '20px';
+      modalContent.style.borderRadius = '8px';
+      modalContent.style.maxWidth = '500px';
+      modalContent.style.textAlign = 'center';
+      
+      const title = document.createElement('h3');
+      title.textContent = 'Save Updated Configuration';
+      
+      const instructions = document.createElement('p');
+      instructions.textContent = 'Click the button below to download the updated config.js file. Replace the existing file with this new version.';
+      
+      const closeButton = document.createElement('button');
+      closeButton.textContent = 'Close';
+      closeButton.style.marginTop = '15px';
+      closeButton.style.marginLeft = '10px';
+      closeButton.style.padding = '8px 15px';
+      closeButton.style.backgroundColor = '#ccc';
+      closeButton.style.border = 'none';
+      closeButton.style.borderRadius = '4px';
+      closeButton.style.cursor = 'pointer';
+      
+      downloadLink.style.display = 'inline-block';
+      downloadLink.style.padding = '8px 15px';
+      downloadLink.style.backgroundColor = 'var(--accent-color)';
+      downloadLink.style.color = 'white';
+      downloadLink.style.textDecoration = 'none';
+      downloadLink.style.borderRadius = '4px';
+      
+      closeButton.addEventListener('click', () => {
+        document.body.removeChild(modal);
+      });
+      
+      modalContent.appendChild(title);
+      modalContent.appendChild(instructions);
+      modalContent.appendChild(downloadLink);
+      modalContent.appendChild(closeButton);
+      modal.appendChild(modalContent);
+      
+      document.body.appendChild(modal);
+      
+      showNotification();
+    }
+    
+    // Initialize the portfolio sections
+    function initPortfolio() {
+      createPortfolioItems('signs', portfolioData.signs);
+      createPortfolioItems('painting', portfolioData.painting);
+      createPortfolioItems('graphics', portfolioData.graphics);
+      createPortfolioItems('diagrams', portfolioData.diagrams);
+      
+      // Set up the save all button
+      document.getElementById('saveAllChanges').addEventListener('click', saveAllChanges);
+    }
+    
+    // Initialize when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', initPortfolio);
+  </script>
+</body>
+</html>
