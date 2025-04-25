@@ -242,20 +242,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('fullscreenImageOverlay');
     const overlayImg = document.getElementById('fullscreenImage');
     const overlayClose = document.getElementById('fullscreenImageClose');
-    // Select images inside modals (customize selector as needed)
-    const modalImages = document.querySelectorAll('.modal-content img, .modal-image img');
-    modalImages.forEach(img => {
-      img.style.cursor = 'zoom-in';
-      img.addEventListener('click', function (e) {
-        overlayImg.src = img.src;
-        overlayImg.alt = img.alt || '';
-        overlay.classList.add('active');
-        overlay.style.display = 'flex';
-        overlayImg.style.display = 'block';
-        overlayClose.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-      });
-    });
+    
+    function getModalImages() {
+      return Array.from(document.querySelectorAll('.modal[style*="display: flex"], .modal[style*="display: block"] .modal-content img, .modal-content img'));
+    }
+    
+    function openOverlay(img) {
+      overlayImg.src = img.src;
+      overlayImg.alt = img.alt || '';
+      overlay.classList.add('active');
+      overlay.style.display = 'flex';
+      overlayImg.style.display = 'block';
+      overlayClose.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+    
     function closeOverlay() {
       overlay.classList.remove('active');
       overlayImg.src = '';
@@ -265,11 +266,18 @@ document.addEventListener('DOMContentLoaded', () => {
       overlayClose.style.display = 'none';
       document.body.style.overflow = '';
     }
+    
+    document.addEventListener('click', function(e) {
+      if (e.target.tagName === 'IMG' && e.target.closest('.modal-content')) {
+        openOverlay(e.target);
+      }
+    });
+    
     overlayClose.addEventListener('click', closeOverlay);
     overlay.addEventListener('click', function (e) {
       if (e.target === overlay) closeOverlay();
     });
-    // Escape key closes overlay
+    
     document.addEventListener('keydown', function (e) {
       if (overlay.classList.contains('active') && (e.key === 'Escape' || e.key === 'Esc')) {
         closeOverlay();
