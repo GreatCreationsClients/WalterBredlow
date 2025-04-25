@@ -824,20 +824,14 @@ html, body {
 
 /* Contact area responsive stacking */
 @media (max-width: 900px) {
-  .contact-container {
-    flex-direction: column !important;
-    align-items: stretch;
-    width: 100vw;
-    gap: 18px;
+  .contact-container, .contact-row {
+    max-width: 95vw;
+    margin: 0 auto;
   }
-  .contact-info {
-    order: 1;
-    width: 100%;
-  }
-  .contact-form {
-    order: 2;
-    width: 100%;
-    margin-top: 0;
+  .contact-info, .contact-form {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -898,9 +892,16 @@ html, body {
 
 /* Fullscreen modal image overlay */
 .fullscreen-image-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 4000;
+  background: rgba(0,0,0,0.92);
   display: none;
   opacity: 0;
   pointer-events: none;
+  align-items: center;
+  justify-content: center;
   transition: opacity 0.2s;
 }
 .fullscreen-image-overlay.active {
@@ -926,12 +927,9 @@ html, body {
 }
 .fullscreen-close {
   position: absolute;
-  top: -36px;
-  right: 0;
+  z-index: 2;
   color: #fff;
   background: none;
   border: none;
-  font-size: 2.5rem;
   cursor: pointer;
-  z-index: 2;
 }
