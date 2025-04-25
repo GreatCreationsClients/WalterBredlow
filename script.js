@@ -236,4 +236,38 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  
+  // --- Fullscreen Image Modal ---
+  function enableFullscreenImages() {
+    const overlay = document.getElementById('fullscreenImageOverlay');
+    const overlayImg = document.getElementById('fullscreenImage');
+    const overlayClose = document.getElementById('fullscreenImageClose');
+    // Select images inside modals (customize selector as needed)
+    const modalImages = document.querySelectorAll('.modal-content img, .modal-image img');
+    modalImages.forEach(img => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', function (e) {
+        overlayImg.src = img.src;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeOverlay() {
+      overlay.classList.remove('active');
+      overlayImg.src = '';
+      document.body.style.overflow = '';
+    }
+    overlayClose.addEventListener('click', closeOverlay);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeOverlay();
+    });
+    // Escape key closes overlay
+    document.addEventListener('keydown', function (e) {
+      if (overlay.classList.contains('active') && (e.key === 'Escape' || e.key === 'Esc')) {
+        closeOverlay();
+      }
+    });
+  }
+  
+  enableFullscreenImages();
 });
